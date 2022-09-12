@@ -38,11 +38,18 @@ def encrypt():
 	inp = input("Enter text to encrypt= ")
 	inp = inp.upper()
 	inp = inp.replace(" ", "")
+	finalInp=''
+	for i in range(0,len(inp)-1,2):
+		if inp[i] == inp[i+1]:
+			finalInp+=inp[i]+'X'+inp[i+1]
+		else:
+			finalInp+=inp[i]+inp[i+1]
+	print(finalInp)
+	if len(inp)%2 != 0:
+		inp=inp+'X'
 	cipherText = ''
 	for i in range(0,len(inp),2):
 		pt=inp[i:i+2]
-		if pt[0] is pt[1]:
-			pt=[pt[0],'X']
 		floc = findLoc(pt[0])
 		sloc = findLoc(pt[1])
 		if floc[0] is sloc[0]:
