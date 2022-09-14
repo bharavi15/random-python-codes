@@ -39,14 +39,20 @@ def encrypt():
 	inp = inp.upper()
 	inp = inp.replace(" ", "")
 	finalInp=''
-	for i in range(0,len(inp)-1,2):
+	for i in range(0,len(inp),2):
+		try:
+			inp[i+1]
+		except:
+			finalInp+= inp[i]
+			break
 		if inp[i] == inp[i+1]:
 			finalInp+=inp[i]+'X'+inp[i+1]
 		else:
 			finalInp+=inp[i]+inp[i+1]
-	print(finalInp)
+	inp = finalInp
 	if len(inp)%2 != 0:
 		inp=inp+'X'
+	print(inp)
 	cipherText = ''
 	for i in range(0,len(inp),2):
 		pt=inp[i:i+2]
