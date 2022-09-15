@@ -39,6 +39,7 @@ def encrypt():
 	inp = inp.upper()
 	inp = inp.replace(" ", "")
 	finalInp=''
+	whereisXappended = []
 	for i in range(0,len(inp),2):
 		try:
 			inp[i+1]
@@ -47,11 +48,13 @@ def encrypt():
 			break
 		if inp[i] == inp[i+1]:
 			finalInp+=inp[i]+'X'+inp[i+1]
+			whereisXappended.append(i+1)
 		else:
 			finalInp+=inp[i]+inp[i+1]
 	inp = finalInp
 	if len(inp)%2 != 0:
 		inp=inp+'X'
+		whereisXappended.append(len(inp)-1)
 	print(inp)
 	cipherText = ''
 	for i in range(0,len(inp),2):
@@ -65,10 +68,12 @@ def encrypt():
 		else:
 			cipherText=cipherText+mat[floc[0]][sloc[1]]+mat[sloc[0]][floc[1]]
 	print(f'cipherText= {cipherText}')
+	print(f'{whereisXappended=}')
 def decrypt():
 	inp = input("Enter text to decrypt= ")
 	inp = inp.upper()
 	inp = inp.replace(" ", "")
+	whereisXappended = [int(x) for x in input('Enter the index of X= ').split(',')]
 	plainText = ''
 	for i in range(0,len(inp),2):
 		pt=inp[i:i+2]
@@ -80,7 +85,14 @@ def decrypt():
 			plainText=plainText+mat[(floc[0]+5)%6][floc[1]]+mat[(sloc[0]+5)%6][sloc[1]]
 		else:
 			plainText=plainText+mat[floc[0]][sloc[1]]+mat[sloc[0]][floc[1]]
-	print(f'plaintext= {plainText}')
+	#print(f'plaintext= {plainText}')
+	for i in whereisXappended:
+		plainText=replaceChar(plainText, i)
+	print('plaintext= '+''.join(plainText.split('/')))
+
+def replaceChar(text,index):
+	newText = text[:index] + '/' + text[index+1:]
+	return newText
 def findLoc(ch):
 	x,y=-1,-1
 	for i in range(6):
