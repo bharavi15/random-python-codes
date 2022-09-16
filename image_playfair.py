@@ -44,6 +44,7 @@ for k in range(256):
             i=i+1
 printMat(RkeyMatrix)
 
+i,j=0,0
 for k in G:
     GkeyMatrix[i][j]=k
     j=(j+1)%16
@@ -57,6 +58,7 @@ for k in range(256):
             i=i+1
 printMat(GkeyMatrix)
 
+i,j=0,0
 for k in B:
     BkeyMatrix[i][j]=k
     j=(j+1)%16
