@@ -1,5 +1,11 @@
 from PIL import Image
 from numpy import asarray
+def removeDuplicates(array):
+    newArr = []
+    for i in array:
+        if i not in newArr:
+            newArr.append(i)
+    return newArr
 def printMat(mat):
 	for m in mat:
 		print(m)
@@ -17,12 +23,6 @@ for row in numpydata:
         G.append(pixel[1])
         B.append(pixel[2])
 # print(R)
-def removeDuplicates(array):
-    newArr = []
-    for i in array:
-        if i not in newArr:
-            newArr.append(i)
-    return newArr
 # print(removeDuplicates(R))
 R=removeDuplicates(R)
 G=removeDuplicates(G)
