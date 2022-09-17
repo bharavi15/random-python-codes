@@ -1,5 +1,5 @@
 from PIL import Image
-from numpy import asarray
+import numpy as np
 def removeDuplicates(array):
     newArr = []
     for i in array:
@@ -12,7 +12,7 @@ def printMat(mat):
 size = 16,16
 img = Image.open('Untitled1.png')
 img = img.resize(size,Image.Resampling.LANCZOS)
-numpydata = asarray(img)
+numpydata = np.asarray(img)
 # print(numpydata)
 R=[]
 G=[]
@@ -42,6 +42,7 @@ for k in range(256):
         j=(j+1)%16
         if j == 0:
             i=i+1
+print('R key matrix:')
 printMat(RkeyMatrix)
 
 i,j=0,0
@@ -56,6 +57,7 @@ for k in range(256):
         j=(j+1)%16
         if j == 0:
             i=i+1
+print('G key matrix:')
 printMat(GkeyMatrix)
 
 i,j=0,0
@@ -70,4 +72,5 @@ for k in range(256):
         j=(j+1)%16
         if j == 0:
             i=i+1
+print('B key matrix:')
 printMat(BkeyMatrix)
