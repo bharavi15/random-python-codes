@@ -5,7 +5,7 @@ import time
 log.basicConfig(
     format="%(asctime)s %(levelname)s: %(message)s",
     datefmt="%Y-%m-%dT%H:%M:%SZ",
-    level=log.INFO
+    level=log.ERROR
 )
 def removeDuplicates(array):
     newArr = []
@@ -35,7 +35,30 @@ def readRGB(filename,resize=False):
             if not resize:
                 A.append(pixel[3])
     return (R,G,B,A,img.size)
-R,G,B,A,s=readRGB('key.png',True)
+def encryptDecryptPixel(encryptResult,i,halfLength,colorKeyMatrix,color,isEncryption=True):
+    floc = findLoc(colorKeyMatrix,color[i])
+    sloc = findLoc(colorKeyMatrix,color[halfLength+i])
+    if isEncryption:
+        if floc[0] == sloc[0]:
+            encryptResult[i]=colorKeyMatrix[floc[0],(floc[1]+1)%16]
+            encryptResult[halfLength+i] = colorKeyMatrix[sloc[0],(sloc[1]+1)%16]
+        elif floc[1] == sloc[1]:
+            encryptResult[i]=colorKeyMatrix[(floc[0]+1)%16,floc[1]]
+            encryptResult[halfLength+i] = colorKeyMatrix[(sloc[0]+1)%16,sloc[1]]
+        else:
+            encryptResult[i]=colorKeyMatrix[floc[0],sloc[1]]
+            encryptResult[halfLength+i] = colorKeyMatrix[sloc[0],floc[1]]
+    else:
+        if floc[0] == sloc[0]:
+            encryptResult[i]=colorKeyMatrix[floc[0],(floc[1]+15)%16]
+            encryptResult[halfLength+i] = colorKeyMatrix[sloc[0],(sloc[1]+15)%16]
+        elif floc[1] == sloc[1]:
+            encryptResult[i]=colorKeyMatrix[(floc[0]+15)%16,floc[1]]
+            encryptResult[halfLength+i] = colorKeyMatrix[(sloc[0]+15)%16,sloc[1]]
+        else:
+            encryptResult[i]=colorKeyMatrix[floc[0],sloc[1]]
+            encryptResult[halfLength+i] = colorKeyMatrix[sloc[0],floc[1]]
+R,G,B,A,s=readRGB('RSCN1033.png',True)
 R=removeDuplicates(R)
 G=removeDuplicates(G)
 B=removeDuplicates(B)
@@ -45,8 +68,8 @@ G.extend([x for x in range(256) if x not in G])
 GkeyMatrix = np.reshape(G, (16,16))
 B.extend([x for x in range(256) if x not in B])
 BkeyMatrix = np.reshape(B, (16,16))
-log.info('R key matrix:')
-print(RkeyMatrix)
+log.debug('R key matrix:')
+log.debug(RkeyMatrix)
 log.debug('G key matrix:')
 log.debug(GkeyMatrix)
 log.debug('B key matrix:')
@@ -58,31 +81,25 @@ def findLoc(mat,x):
 def encrypt():
     #inp = input("Enter image file name to encrypt= ")
     #R,G,B=readRGB(inp,False)
-    R,G,B,A,sizes=readRGB('toBeEncrypted.png',False)
+    R,G,B,A,sizes=readRGB('Untitle.png',False)
     log.info(sizes)
     encryptedR=np.full(len(R),-1)
+    encryptedG=np.full(len(G),-1)
+    encryptedB=np.full(len(B),-1)
     log.info(encryptedR.shape)
     halfLength = len(R)//2
     for i in range(halfLength):
-        floc = findLoc(RkeyMatrix,R[i])
-        sloc = findLoc(RkeyMatrix,R[halfLength+i])
-        if floc[0] == sloc[0]:
-            encryptedR[i]=RkeyMatrix[floc[0],(floc[1]+1)%16]
-            encryptedR[halfLength+i] = RkeyMatrix[sloc[0],(sloc[1]+1)%16]
-        elif floc[1] == sloc[1]:
-            encryptedR[i]=RkeyMatrix[(floc[0]+1)%16,floc[1]]
-            encryptedR[halfLength+i] = RkeyMatrix[(sloc[0]+1)%16,sloc[1]]
-        else:
-            encryptedR[i]=RkeyMatrix[floc[0],sloc[1]]
-            encryptedR[halfLength+i] = RkeyMatrix[sloc[0],floc[1]]
+       encryptDecryptPixel(encryptedR,i,halfLength,RkeyMatrix,R)
+       encryptDecryptPixel(encryptedG,i,halfLength,GkeyMatrix,G)
+       encryptDecryptPixel(encryptedB,i,halfLength,BkeyMatrix,B)
     fullImage1D=[]
-    print(f'encryption {R=}')
-    print(f'{encryptedR=}')
-    print(f'encryption {G=}')
-    print(f'encryption {B=}')
-    print(f'encryption {A=}')
+    log.debug(f'encryption {R=}')
+    log.debug(f'{encryptedR=}')
+    log.debug(f'encryption {G=}')
+    log.debug(f'encryption {B=}')
+    log.debug(f'encryption {A=}')
     for i in range(len(encryptedR)):
-        fullImage1D.append([encryptedR[i],G[i],B[i],A[i]])
+        fullImage1D.append([encryptedR[i],encryptedG[i],encryptedB[i],A[i]])
     # print(fullImage1D)
     x,y,z=sizes[0],sizes[1],4
     imageArr = np.reshape(fullImage1D,(y,x,z))
@@ -96,38 +113,26 @@ def decrypt():
     #R,G,B=readRGB(inp,False)
     R,G,B,A,sizes=readRGB('enc.png',False)
     decryptedR=np.full(len(R),-1)
+    decryptedG=np.full(len(G),-1)
+    decryptedB=np.full(len(B),-1)
     halfLength = len(R)//2
     for i in range(halfLength):
-        # print(i)
-        floc = findLoc(RkeyMatrix,R[i])
-        sloc = findLoc(RkeyMatrix,R[halfLength+i])
-        if floc[0] == sloc[0]:
-            decryptedR[i]=RkeyMatrix[floc[0],(floc[1]+15)%16]
-            decryptedR[halfLength+i] = RkeyMatrix[sloc[0],(sloc[1]+15)%16]
-        elif floc[1] == sloc[1]:
-            decryptedR[i]=RkeyMatrix[(floc[0]+15)%16,floc[1]]
-            decryptedR[halfLength+i] = RkeyMatrix[(sloc[0]+15)%16,sloc[1]]
-        else:
-            decryptedR[i]=RkeyMatrix[floc[0],sloc[1]]
-            decryptedR[halfLength+i] = RkeyMatrix[sloc[0],floc[1]]
+        encryptDecryptPixel(decryptedR,i,halfLength,RkeyMatrix,R,False)
+        encryptDecryptPixel(decryptedG,i,halfLength,GkeyMatrix,G,False)
+        encryptDecryptPixel(decryptedB,i,halfLength,BkeyMatrix,B,False)
     fullImage1D=[]
-    print(f'decryption {R=}')
-    print(f'{decryptedR=}')
-    print(f'decryption {G=}')
-    print(f'decryption {B=}')
-    print(f'decryption {A=}')
+    log.debug(f'decryption {R=}')
+    log.debug(f'{decryptedR=}')
+    log.debug(f'decryption {G=}')
+    log.debug(f'decryption {B=}')
+    log.debug(f'decryption {A=}')
     for i in range(len(decryptedR)):
-        fullImage1D.append([decryptedR[i],G[i],B[i],A[i]])
+        fullImage1D.append([decryptedR[i],decryptedG[i],decryptedB[i],A[i]])
     # print("fullImage1D:",len(fullImage1D))
     x,y,z=sizes[0],sizes[1],4
     imageArr = np.reshape(fullImage1D,(y,x,z))
     image = Image.fromarray(imageArr.astype('uint8'),'RGBA')
     image.save('original.png')
-    time.sleep(2)
-    R,G,B,A,s=readRGB('original.png')
-    print(f'decryption {R=}')
-    print(f'decryption {G=}')
-    print(f'decryption {B=}')
 encrypt()
 time.sleep(2)
 decrypt()
