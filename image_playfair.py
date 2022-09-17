@@ -27,50 +27,10 @@ for row in numpydata:
 R=removeDuplicates(R)
 G=removeDuplicates(G)
 B=removeDuplicates(B)
-RkeyMatrix = [[-1 for i in range(16)] for j in range(16)]
-GkeyMatrix = [[-1 for i in range(16)] for j in range(16)]
-BkeyMatrix = [[-1 for i in range(16)] for j in range(16)]
-i,j=0,0
-for k in R:
-    RkeyMatrix[i][j]=k
-    j=(j+1)%16
-    if j == 0:
-        i=i+1
-for k in range(256):
-    if k not in R:
-        RkeyMatrix[i][j]=k
-        j=(j+1)%16
-        if j == 0:
-            i=i+1
-print('R key matrix:')
-printMat(RkeyMatrix)
-
-i,j=0,0
-for k in G:
-    GkeyMatrix[i][j]=k
-    j=(j+1)%16
-    if j == 0:
-        i=i+1
-for k in range(256):
-    if k not in G:
-        GkeyMatrix[i][j]=k
-        j=(j+1)%16
-        if j == 0:
-            i=i+1
-print('G key matrix:')
-printMat(GkeyMatrix)
-
-i,j=0,0
-for k in B:
-    BkeyMatrix[i][j]=k
-    j=(j+1)%16
-    if j == 0:
-        i=i+1
-for k in range(256):
-    if k not in B:
-        BkeyMatrix[i][j]=k
-        j=(j+1)%16
-        if j == 0:
-            i=i+1
-print('B key matrix:')
-printMat(BkeyMatrix)
+R.extend([x for x in range(256) if x not in R])
+RkeyMatrix = np.reshape(R, (16,16))
+G.extend([x for x in range(256) if x not in G])
+GkeyMatrix = np.reshape(G, (16,16))
+B.extend([x for x in range(256) if x not in B])
+BkeyMatrix = np.reshape(B, (16,16))
+print('R key matrix:\n', RkeyMatrix, '\nG key matrix:\n', GkeyMatrix, '\nB key matrix:\n', BkeyMatrix)
