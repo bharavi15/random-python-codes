@@ -39,6 +39,10 @@ def encryptDecryptPixel(encryptResult,i,halfLength,colorKeyMatrix,color,isEncryp
     floc = findLoc(colorKeyMatrix,color[i])
     sloc = findLoc(colorKeyMatrix,color[halfLength+i])
     if isEncryption:
+        floc[0]=(floc[0]+9)%16
+        floc[1]=(floc[1]+9)%16
+        sloc[0]=(sloc[0]+9)%16
+        sloc[1]=(sloc[1]+9)%16
         if floc[0] == sloc[0]:
             encryptResult[i]=colorKeyMatrix[floc[0],(floc[1]+1)%16]
             encryptResult[halfLength+i] = colorKeyMatrix[sloc[0],(sloc[1]+1)%16]
@@ -48,7 +52,11 @@ def encryptDecryptPixel(encryptResult,i,halfLength,colorKeyMatrix,color,isEncryp
         else:
             encryptResult[i]=colorKeyMatrix[floc[0],sloc[1]]
             encryptResult[halfLength+i] = colorKeyMatrix[sloc[0],floc[1]]
-    else:
+    else:  
+        floc[0]=(floc[0]+7)%16
+        floc[1]=(floc[1]+7)%16
+        sloc[0]=(sloc[0]+7)%16
+        sloc[1]=(sloc[1]+7)%16
         if floc[0] == sloc[0]:
             encryptResult[i]=colorKeyMatrix[floc[0],(floc[1]+15)%16]
             encryptResult[halfLength+i] = colorKeyMatrix[sloc[0],(sloc[1]+15)%16]
@@ -58,7 +66,7 @@ def encryptDecryptPixel(encryptResult,i,halfLength,colorKeyMatrix,color,isEncryp
         else:
             encryptResult[i]=colorKeyMatrix[floc[0],sloc[1]]
             encryptResult[halfLength+i] = colorKeyMatrix[sloc[0],floc[1]]
-R,G,B,A,s=readRGB('RSCN1033.png',True)
+R,G,B,A,s=readRGB('key.png',True)
 R=removeDuplicates(R)
 G=removeDuplicates(G)
 B=removeDuplicates(B)
@@ -81,7 +89,7 @@ def findLoc(mat,x):
 def encrypt():
     #inp = input("Enter image file name to encrypt= ")
     #R,G,B=readRGB(inp,False)
-    R,G,B,A,sizes=readRGB('Untitle.png',False)
+    R,G,B,A,sizes=readRGB('RSCN10331.png',False)
     log.info(sizes)
     encryptedR=np.full(len(R),-1)
     encryptedG=np.full(len(G),-1)
@@ -89,9 +97,9 @@ def encrypt():
     log.info(encryptedR.shape)
     halfLength = len(R)//2
     for i in range(halfLength):
-       encryptDecryptPixel(encryptedR,i,halfLength,RkeyMatrix,R)
-       encryptDecryptPixel(encryptedG,i,halfLength,GkeyMatrix,G)
-       encryptDecryptPixel(encryptedB,i,halfLength,BkeyMatrix,B)
+       encryptDecryptPixel(encryptedR,i,halfLength,BkeyMatrix,R)
+       encryptDecryptPixel(encryptedG,i,halfLength,RkeyMatrix,G)
+       encryptDecryptPixel(encryptedB,i,halfLength,GkeyMatrix,B)
     fullImage1D=[]
     log.debug(f'encryption {R=}')
     log.debug(f'{encryptedR=}')
@@ -117,9 +125,9 @@ def decrypt():
     decryptedB=np.full(len(B),-1)
     halfLength = len(R)//2
     for i in range(halfLength):
-        encryptDecryptPixel(decryptedR,i,halfLength,RkeyMatrix,R,False)
-        encryptDecryptPixel(decryptedG,i,halfLength,GkeyMatrix,G,False)
-        encryptDecryptPixel(decryptedB,i,halfLength,BkeyMatrix,B,False)
+        encryptDecryptPixel(decryptedR,i,halfLength,BkeyMatrix,R,False)
+        encryptDecryptPixel(decryptedG,i,halfLength,RkeyMatrix,G,False)
+        encryptDecryptPixel(decryptedB,i,halfLength,GkeyMatrix,B,False)
     fullImage1D=[]
     log.debug(f'decryption {R=}')
     log.debug(f'{decryptedR=}')
