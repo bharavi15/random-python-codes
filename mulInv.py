@@ -1,4 +1,6 @@
+# Multiplicative Inverse Using Extended Euclidean Algorithm
 quotients = []
+# Getting the GCD of the two numbers
 def gcd(m,n):
     if m<n:
         n,m=m,n
