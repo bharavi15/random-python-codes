@@ -32,8 +32,11 @@ def readRGB(filename,resize=False):
             R.append(pixel[0])
             G.append(pixel[1])
             B.append(pixel[2])
-            if not resize:
+            try:
                 A.append(pixel[3])
+            except IndexError:
+                A.append(255)
+                pass
     return (R,G,B,A,img.size)
 def encryptDecryptPixel(encryptResult,i,halfLength,colorKeyMatrix,color,isEncryption=True):
     floc = findLoc(colorKeyMatrix,color[i])
@@ -87,9 +90,9 @@ def findLoc(mat,x):
     coordinates = np.where(mat==x)
     return [coordinates[0][0],coordinates[1][0]]
 def encrypt():
-    #inp = input("Enter image file name to encrypt= ")
-    #R,G,B=readRGB(inp,False)
-    R,G,B,A,sizes=readRGB('RSCN10331.png',False)
+    inp = input("Enter image file name to encrypt= ")
+    R,G,B,A,sizes=readRGB(inp,False)
+    # R,G,B,A,sizes=readRGB('download.png',False)
     log.info(sizes)
     encryptedR=np.full(len(R),-1)
     encryptedG=np.full(len(G),-1)
@@ -142,5 +145,7 @@ def decrypt():
     image = Image.fromarray(imageArr.astype('uint8'),'RGBA')
     image.save('original.png')
 encrypt()
+print('Encrypt successful')
 time.sleep(2)
 decrypt()
+print('Decrypt successful')
