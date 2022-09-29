@@ -2,3 +2,10 @@ Lib/
 Scripts/
 Include/
 pyvenv.cfg
+__pycache__
+.vscode
+*.png
+*.jpg
+*.jpeg
+*.txt
+share/
