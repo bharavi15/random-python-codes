@@ -1,22 +1,20 @@
 import numpy as np
-def polymultiply(x, y):
-    result = 0
-    while x and y:
-        if x & 1: 
-            result = result ^ y
-        x >>= 1
-        y <<= 1
-    return result
+
 
 def polymoddivision(x,y):
-    q = 0
-    ylen = y.bit_length()
+    quotient = 0
+    y_len = y.bit_length()
     while True:
-        shift = x.bit_length() - ylen
+        shift = x.bit_length() - y_len
         if shift < 0:
-            return (q , x)
-        q = q ^ (1 << shift)
+            return (quotient , x)
+        quotient = quotient ^ (1 << shift)
         x = x ^ (y << shift)
+
+def polymodinverse(a, mod):
+    r, x, y = polygcd(a, mod)
+    if r == 1:
+        return x
 
 def polygcd(x,y):
     x = (x, 1, 0)
@@ -27,36 +25,47 @@ def polygcd(x,y):
             return y
         x , y = y , (r, x[1] ^ polymultiply(q, y[1]), x[2] ^ polymultiply(q, y[2]))
 
-def polymodinverse(a, mod):
-    r, x, y = polygcd(a, mod)
-    if r == 1:
-        return x
+def polymultiply(x, y):
+    product = 0
+    while x and y:
+        if x & 1: 
+            product = product ^ y
+        x >>= 1
+        y <<= 1
+    return product
 
-poly1 = 0b1100
-poly2 = 0b100011011
-n1 = polymodinverse(poly1, poly2)
-n1 = bin(n1)[2:]
-n2 = polymodinverse(poly2, poly1)
-n2 = bin(n2)[2:]
-bit_word1 = []
-bit_word2 = []
-poly11 = []
-poly22 = []
-for k in n1:
-    bit_word1.append(int(k))
-for l in n2:
-    bit_word2.append(int(l))
-for k in bin(poly1)[2:]:
-    poly11.append(int(k))
-for l in bin(poly2)[2:]:
-    poly22.append(int(l))
-polynom1 = np.poly1d(bit_word1)
-polynom2 = np.poly1d(bit_word2)
 
-print('The multplicative inverses of: ')
-print()
-print(np.poly1d(poly11), 'is:')
-print(polynom1)
-print()
-print(np.poly1d(poly22), 'is:')
-print(polynom2)
+def multplicativeInverse(polyA, polyB):
+    n1 = polymodinverse(polyA, polyB)
+    n1 = bin(n1)[2:]
+    n2 = polymodinverse(polyB, polyA)
+    n2 = bin(n2)[2:]
+    bit_word1 = []
+    bit_word2 = []
+    poly11 = []
+    poly22 = []
+    for k in n1:
+        bit_word1.append(int(k))
+    for l in n2:
+        bit_word2.append(int(l))
+    for k in bin(polyA)[2:]:
+        poly11.append(int(k))
+    for l in bin(polyB)[2:]:
+        poly22.append(int(l))
+    polynom1 = np.poly1d(bit_word1)
+    polynom2 = np.poly1d(bit_word2)
+
+    print('The multplicative inverses of: ')
+    print(np.poly1d(poly11), 'is:')
+    print(polynom1)
+    print('================================')
+    print(bit_word1)
+    print('================================')
+    return bit_word1
+    # print(np.poly1d(poly22), 'is:')
+    # print(polynom2)
+
+if __name__ == '__main__':
+    polyA = 0b1011
+    polyB = 0b10011
+    print(multplicativeInverse(polyA, polyB))
